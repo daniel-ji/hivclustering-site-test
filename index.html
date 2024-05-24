@@ -42,8 +42,8 @@
 			pyodide.FS.writeFile(PATH_TO_PYODIDE_ROOT + 'hivnetworkcsv.py', await (await fetch(url + "hivnetworkcsv.py")).text(), { encoding: "utf8" });
 
 			// load in data files
-			pyodide.FS.writeFile(PATH_TO_PYODIDE_ROOT + 'sequence.tn93.csv', await (await fetch('http://localhost:8000/sequence.tn93.csv')).text());
-			pyodide.FS.writeFile(PATH_TO_PYODIDE_ROOT + 'sequence.fasta_output.fasta', await (await fetch('http://localhost:8000/sequence.fasta_output.fasta')).text());
+			pyodide.FS.writeFile(PATH_TO_PYODIDE_ROOT + 'sequence.tn93.csv', await (await fetch(url + 'sequence.tn93.csv')).text());
+			pyodide.FS.writeFile(PATH_TO_PYODIDE_ROOT + 'sequence.fasta_output.fasta', await (await fetch(url + 'sequence.fasta_output.fasta')).text());
 
 			pyodide.globals.set("arguments", `./hivnetworkcsv.py -i sequence.tn93.csv -t 0.015 -f plain -J -q -n remove -s sequence.fasta_output.fasta`)
 			pyodide.runPython(await (await fetch(url + "hivnetworkcsvweb.py")).text());
