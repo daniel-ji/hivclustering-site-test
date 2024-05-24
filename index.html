@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+
+<head>
+	<script src="https://cdn.jsdelivr.net/pyodide/v0.26.0a6/full/pyodide.js"></script>
+</head>
+
+<body>
+	Pyodide test page <br>
+	Open your browser console to see Pyodide output
+	<script type="text/javascript">
+		async function main() {
+			const pyodide = await loadPyodide();
+			pyodide.setDebug(true)
+			console.log(pyodide.runPython(`
+            import sys
+            sys.version
+        `));
+			await pyodide.loadPackage("micropip");
+			const micropip = pyodide.pyimport("micropip");
+
+			await pyodide.loadPackage("pysam");
+			console.log("pysam installed")
+			await micropip.install("http://localhost:8000/bioext-0.21.7-cp312-cp312-emscripten_3_1_58_wasm32.whl");
+			console.log("bioext installed")
+			await micropip.install("http://localhost:8000/hyphy_python-0.1.11-cp312-cp312-emscripten_3_1_58_wasm32.whl");
+			console.log("hyphy installed")
+			await micropip.install("http://localhost:8000/fakemp-0.9.2-py3-none-any.whl");
+			console.log("fakemp installed")
+			await micropip.install("http://localhost:8000/hppy-0.9.9-py3-none-any.whl");
+			console.log("hppy installed")
+			await micropip.install("http://localhost:8000/hivclustering-1.7.0-py3-none-any.whl", keep_going=true);
+
+			pyodide.runPython(`
+			import hivclustering
+			print(hivclustering.__version__)`
+			);
+		}
+		main();
+	</script>
+</body>
+
+</html>
