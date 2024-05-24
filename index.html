@@ -9,6 +9,8 @@
 	Pyodide test page <br>
 	Open your browser console to see Pyodide output
 	<script type="text/javascript">
+		const PATH_TO_PYODIDE_ROOT = "/home/pyodide/";
+
 		async function main() {
 			const pyodide = await loadPyodide();
 			pyodide.setDebug(true)
@@ -29,12 +31,21 @@
 			console.log("fakemp installed")
 			await micropip.install("http://localhost:8000/hppy-0.9.9-py3-none-any.whl");
 			console.log("hppy installed")
-			await micropip.install("http://localhost:8000/hivclustering-1.7.0-py3-none-any.whl", keep_going=true);
+			await micropip.install("http://localhost:8000/hivclustering-1.7.0-py3-none-any.whl", keep_going = true);
 
 			pyodide.runPython(`
 			import hivclustering
 			print(hivclustering.__version__)`
 			);
+			// load in hivnetworkcsv.py
+			pyodide.FS.writeFile(PATH_TO_PYODIDE_ROOT + 'hivnetworkcsv.py', await (await fetch("http://localhost:8000/hivnetworkcsv.py")).text(), { encoding: "utf8" });
+
+			// load in data files
+			pyodide.FS.writeFile(PATH_TO_PYODIDE_ROOT + 'sequence.tn93.csv', await (await fetch('http://localhost:8000/sequence.tn93.csv')).text());
+			pyodide.FS.writeFile(PATH_TO_PYODIDE_ROOT + 'sequence.fasta_output.fasta', await (await fetch('http://localhost:8000/sequence.fasta_output.fasta')).text());
+
+			pyodide.globals.set("arguments", `./hivnetworkcsv.py -i sequence.tn93.csv -t 0.015 -f plain -J -q -n remove -s sequence.fasta_output.fasta`)
+			pyodide.runPython(await (await fetch("http://localhost:8000/hivnetworkcsvweb.py")).text());
 		}
 		main();
 	</script>
